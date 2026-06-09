@@ -11,22 +11,36 @@
     .box { text-align: center; padding: 40px 20px; }
     h2 { font-weight: 300; letter-spacing: 4px; color: #9c46f5; }
     p  { color: rgba(255,255,255,0.5); font-size: 14px; }
+    #open-btn {
+      display: none;
+      margin-top: 24px;
+      padding: 14px 32px;
+      background: linear-gradient(90deg, #8c2ff5, #4c0db5);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="box">
     <h2>MyNav</h2>
     <p id="msg">Completando autenticación…</p>
+    <a id="open-btn">Abrir MyNav</a>
   </div>
   <script>
     (function () {
-      var params = new URLSearchParams(window.location.search);
+      var params  = new URLSearchParams(window.location.search);
       var code    = params.get('code');
       var state   = params.get('state');
       var error   = params.get('error');
 
       if (error) {
-        document.getElementById('msg').textContent = 'Error: ' + error;
+        document.getElementById('msg').textContent = 'Error de Tesla: ' + error;
         return;
       }
 
@@ -39,14 +53,22 @@
       var deepLink = 'teslaapp://oauth/callback?code=' + encodeURIComponent(code);
       if (state) deepLink += '&state=' + encodeURIComponent(state);
 
-      // Open deep link immediately
+      // Wire up the fallback button BEFORE trying the automatic redirect
+      var btn = document.getElementById('open-btn');
+      btn.href = deepLink;
+      btn.onclick = function(e) {
+        e.preventDefault();
+        window.location.href = deepLink;
+      };
+
+      // Attempt automatic redirect
       window.location.href = deepLink;
 
-      // Fallback message after 1s in case the app didn't open
+      // If still here after 1.2s, show the manual button
       setTimeout(function () {
-        document.getElementById('msg').textContent =
-          'Abre MyNav si no se abrió automáticamente.';
-      }, 1000);
+        document.getElementById('msg').textContent = 'Toca el botón para abrir MyNav:';
+        btn.style.display = 'inline-block';
+      }, 1200);
     })();
   </script>
 </body>
