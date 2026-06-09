@@ -55,11 +55,7 @@
 
       // Wire up the fallback button BEFORE trying the automatic redirect
       var btn = document.getElementById('open-btn');
-      btn.href = deepLink;
-      btn.onclick = function(e) {
-        e.preventDefault();
-        window.location.href = deepLink;
-      };
+      btn.setAttribute('href', deepLink);   // plain anchor — iOS handles custom schemes natively
 
       // Attempt automatic redirect
       window.location.href = deepLink;
