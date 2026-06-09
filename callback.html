@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MyNav — Autenticación</title>
+  <style>
+    body { background: #0d0015; color: #fff; font-family: -apple-system, sans-serif;
+           display: flex; align-items: center; justify-content: center;
+           min-height: 100vh; margin: 0; }
+    .box { text-align: center; padding: 40px 20px; }
+    h2 { font-weight: 300; letter-spacing: 4px; color: #9c46f5; }
+    p  { color: rgba(255,255,255,0.5); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>MyNav</h2>
+    <p id="msg">Completando autenticación…</p>
+  </div>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var code    = params.get('code');
+      var state   = params.get('state');
+      var error   = params.get('error');
+
+      if (error) {
+        document.getElementById('msg').textContent = 'Error: ' + error;
+        return;
+      }
+
+      if (!code) {
+        document.getElementById('msg').textContent = 'No se recibió código de autorización.';
+        return;
+      }
+
+      // Build the deep link back into the native app
+      var deepLink = 'teslaapp://oauth/callback?code=' + encodeURIComponent(code);
+      if (state) deepLink += '&state=' + encodeURIComponent(state);
+
+      // Open deep link immediately
+      window.location.href = deepLink;
+
+      // Fallback message after 1s in case the app didn't open
+      setTimeout(function () {
+        document.getElementById('msg').textContent =
+          'Abre MyNav si no se abrió automáticamente.';
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
